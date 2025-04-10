@@ -1,0 +1,33 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: ms-gateway
+  main:
+    web-application-type: reactive
+
+  gateway:
+    httpclient:
+      ssl:
+        enabled: false
+    routes:
+      - id: ms-usuarios
+        uri: lb://ms-usuarios  # Usa el nombre de tu microservicio registrado en Eureka
+        predicates:
+          - Path=/usuarios/**  # Ruta que el API Gateway debe redirigir a ms-usuarios
+      - id: ms-clientes
+        uri: lb://ms-clientes
+        predicates:
+          - Path=/clientes/**
+      - id: ms-transacciones
+        uri: lb://ms-transacciones
+        predicates:
+          - Path=/transactions/**
+ # Asegúrate de que el nombre sea el adecuado
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8090/eureka/  # URL de tu servidor Eureka
+    fetchRegistry: true  # Habilitar la recuperación del registro
+    registerWithEureka: true  # Habilitar el registro en Eureka
