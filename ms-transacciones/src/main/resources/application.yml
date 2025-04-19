@@ -26,6 +26,11 @@ spring:
     user:
       name: user
       password: password
+springdoc:
+  swagger-ui:
+    path: /doc/swagger-ui.html
+
+
 eureka:
   client:
     serviceUrl:
