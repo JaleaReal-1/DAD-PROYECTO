@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: ms-cursos # cambia según el microservicio
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      uri: http://localhost:7070
