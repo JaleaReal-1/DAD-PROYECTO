@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: pap-matricula # cambia según el microservicio
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      uri: http://localhost:7070
+
