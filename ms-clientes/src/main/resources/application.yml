@@ -9,24 +9,20 @@
 
 server:
   port: 8082
+
 spring:
-  application:
-    name: ms-clientes
   datasource:
-    url: jdbc:mysql://localhost:3306/contabilidad_db
-    username: root
-    password:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:postgresql://localhost:5432/clientes_db
+    username: postgres
+    password: 123456
+    driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-  security:
-    user:
-      name: user
-      password: password
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
 eureka:
   client:
     serviceUrl:

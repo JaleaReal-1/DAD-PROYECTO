@@ -1,12 +1,10 @@
 package com.empresa.msusuarios.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "Usuarios") // evita el uso de palabra reservada
 public class User {
 
     @Id
@@ -17,7 +15,7 @@ public class User {
     private String password;
 
     // Constructor vacío (necesario para JPA)
-    public User() {}
+
 
     // Getters y Setters
     public Long getId() {
