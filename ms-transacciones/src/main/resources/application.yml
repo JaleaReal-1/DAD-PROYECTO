@@ -30,7 +30,9 @@
 spring:
   application:
     name: ms-transacciones # cambia según el microservicio
+  config:
+    import: "configserver:"
   cloud:
     config:
-      uri: http://localhost:8888
+      uri: http://localhost:7070
 
