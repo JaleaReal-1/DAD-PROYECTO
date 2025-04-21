@@ -26,7 +26,7 @@ spring:
         - id: ms-transacciones
           uri: lb://ms-transacciones
           predicates:
-            - Path=/transactions/**
+            - Path=/transacciones/**
 
 eureka:
   client:
