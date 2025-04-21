@@ -1,15 +1,7 @@
-server:
-  port: 8090  # Configura el puerto en el que se ejecutará Eureka
-
 spring:
   application:
-    name: eureka-server  # Nombre del servicio de Eureka
-  cloud:
-    config:
-      enabled: false
-eureka:
-  client:
-    registerWithEureka: false  # No necesita registrarse en Eureka
-    fetchRegistry: false  # No necesita obtener el registro
-  server:
-    enableSelfPreservation: false  # Deshabilitar la auto-preservación (solo en desarrollo)
+    name: ms-eureka-service
+  profiles:
+    active: development
+  config:
+    import: optional:configserver:http://root:123456@localhost:7070
