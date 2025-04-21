@@ -9,7 +9,7 @@ spring:
       server:
         git:
           uri: https://github.com/JaleaReal-1/DAD-PROYECTO.git
-          searchPaths: config-data
+          searchPaths: config-repo
           default-label: main
   security:
     user:
