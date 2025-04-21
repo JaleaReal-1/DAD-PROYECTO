@@ -4,7 +4,7 @@ server:
 
 spring:
   application:
-    name: ms-clientes
+    name: ms-estudiantes
   datasource:
     url: jdbc:postgresql://localhost:5432/estudiantes_db
     username: postgres
