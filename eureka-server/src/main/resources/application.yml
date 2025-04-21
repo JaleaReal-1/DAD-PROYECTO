@@ -10,9 +10,7 @@
 spring:
   application:
     name: ms-eureka-service
-
+  profiles:
+    active: development
   config:
-    import: "optional:configserver:"
-  cloud:
-    config:
-      uri: http://localhost:7070
+    import: optional:configserver:http://root:123456@localhost:7070
