@@ -1,0 +1,15 @@
+package com.example.papmatricula.feing;
+
+
+
+import com.example.papmatricula.dto.Estudiante;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@FeignClient(name = "pap-estudiantes")
+public interface EstudianteClient {
+    @GetMapping("/estudiantes/{id}")
+    Estudiante getEstudianteById(@PathVariable Long id);
+}
+
