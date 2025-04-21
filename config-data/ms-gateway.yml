@@ -15,18 +15,18 @@ spring:
         ssl:
           enabled: false
       routes:
-        - id: ms-usuarios
-          uri: lb://ms-usuarios
+        - id: pap-cursos
+          uri: lb://pap-cursos
           predicates:
-            - Path=/usuarios/**
-        - id: ms-clientes
-          uri: lb://ms-clientes
+            - Path=/cursos/**
+        - id: pap-estudiantes
+          uri: lb://pap-estudiantes
           predicates:
-            - Path=/clientes/**
-        - id: ms-transacciones
-          uri: lb://ms-transacciones
+            - Path=/estudiantes/**
+        - id: pap-matriculas
+          uri: lb://pap-matriculas
           predicates:
-            - Path=/transacciones/**
+            - Path=/matriculas/**
 
 eureka:
   client:

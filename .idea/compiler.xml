@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="pap-cursos" />
+        <module name="pap-matricula" />
         <module name="ms-usuarios" />
       </profile>
     </annotationProcessing>
@@ -15,6 +16,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="ms-usuarios" options="-parameters" />
       <module name="pap-cursos" options="-parameters" />
+      <module name="pap-matricula" options="-parameters" />
     </option>
   </component>
 </project>
