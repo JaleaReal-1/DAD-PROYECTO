@@ -1,7 +1,15 @@
+#spring:
+##  application:
+##    name: ms-eureka-service
+##  profiles:
+##    active: development
+##  config:
+##    import: optional:configserver:http://root:123456@localhost:7070
+##
+##
 spring:
   application:
     name: ms-eureka-service
-  profiles:
-    active: development
-  config:
-    import: optional:configserver:http://root:123456@localhost:7070
+  cloud:
+    config:
+      uri: http://localhost:7070
