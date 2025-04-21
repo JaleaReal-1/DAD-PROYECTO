@@ -12,7 +12,7 @@ spring:
     name: ms-eureka-service
 
   config:
-    import: "configserver:"
+    import: "optional:configserver:"
   cloud:
     config:
       uri: http://localhost:7070
