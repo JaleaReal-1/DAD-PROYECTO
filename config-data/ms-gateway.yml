@@ -21,8 +21,8 @@ spring:
           uri: lb://pap-estudiantes
           predicates:
             - Path=/estudiantes/**
-        - id: pap-matriculas
-          uri: lb://pap-matriculas
+        - id: pap-matricula
+          uri: lb://pap-matricula
           predicates:
             - Path=/matriculas/**
 
