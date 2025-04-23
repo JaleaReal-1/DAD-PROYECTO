@@ -14,9 +14,9 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="ms-usuarios" options="-parameters" />
-      <module name="pap-cursos" options="-parameters" />
-      <module name="pap-matricula" options="-parameters" />
+      <module name="ms-usuarios" options="" />
+      <module name="pap-cursos" options="" />
+      <module name="pap-matricula" options="" />
     </option>
   </component>
 </project>

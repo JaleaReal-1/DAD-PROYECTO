@@ -11,12 +11,10 @@ spring:
       discovery:
         locator:
           enabled: true
-      httpclient:
-        ssl:
-          enabled: false
+          lower-case-service-id: true
       routes:
-        - id: pap-cursos
-          uri: lb://pap-cursos
+        - id: ms-cursos
+          uri: lb://ms-cursos
           predicates:
             - Path=/cursos/**
         - id: pap-estudiantes
