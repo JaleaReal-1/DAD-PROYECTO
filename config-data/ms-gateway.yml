@@ -13,8 +13,8 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        - id: ms-cursos
-          uri: lb://ms-cursos
+        - id: pap-cursos
+          uri: lb://pap-cursos
           predicates:
             - Path=/cursos/**
         - id: pap-estudiantes
