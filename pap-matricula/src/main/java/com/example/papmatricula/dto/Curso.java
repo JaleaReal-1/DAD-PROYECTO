@@ -11,4 +11,5 @@ public class Curso {
     private int capacidad;
     private String codigo;
     private String ciclo;
+    private int inscritos = 0;
 }

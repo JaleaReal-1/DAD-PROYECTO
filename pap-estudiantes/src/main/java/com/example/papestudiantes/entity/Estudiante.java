@@ -1,9 +1,6 @@
 package com.example.papestudiantes.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,8 +15,10 @@ public class Estudiante {
     private Long id;
 
     private String nombre;
-    private String dni; // Nuevo campo agregado
+
     private String carrera;
     private String estado;
     private String cicloActual;
+    @Column(unique = true) // Asegura que el DNI sea único
+    private String dni; // Nuevo campo agregado
 }

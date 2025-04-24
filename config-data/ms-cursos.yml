@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: ms-cursos
+    name: pap-cursos
   datasource:
     url: jdbc:h2:mem:cursos_db
     driver-class-name: org.h2.Driver

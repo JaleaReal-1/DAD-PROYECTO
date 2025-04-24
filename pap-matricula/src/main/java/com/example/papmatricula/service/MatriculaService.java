@@ -1,6 +1,5 @@
 package com.example.papmatricula.service;
 
-
 import com.example.papmatricula.feing.CursoClient;
 import com.example.papmatricula.feing.EstudianteClient;
 import com.example.papmatricula.dto.Curso;
@@ -11,6 +10,7 @@ import com.example.papmatricula.repository.MatriculaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -26,6 +26,33 @@ public class MatriculaService {
     }
 
     public Matricula guardar(Matricula m) {
+        // 1. Verificar si el estudiante está activo
+        Estudiante estudiante = estudianteClient.getEstudianteById(m.getEstudianteId());
+        if (!"Activo".equalsIgnoreCase(estudiante.getEstado())) {
+            throw new RuntimeException("El estudiante no está activo");
+        }
+
+        // 2. Verificar capacidad del curso usando el campo "inscritos"
+        Curso curso = cursoClient.getCursoById(m.getCursoId());
+        if (curso.getInscritos() >= curso.getCapacidad()) {
+            throw new RuntimeException("El curso ya alcanzó su capacidad máxima");
+        }
+
+        // 3. Verificar que no se repita la matrícula del mismo estudiante al mismo curso
+        boolean yaMatriculado = repository.existsByEstudianteIdAndCursoId(m.getEstudianteId(), m.getCursoId());
+        if (yaMatriculado) {
+            throw new RuntimeException("El estudiante ya está matriculado en este curso");
+        }
+
+        // Establecer fecha de registro si es null
+        if (m.getFecha() == null) {
+            m.setFecha(LocalDate.now());
+        }
+
+        // Decrementar el número de cupos disponibles del curso
+        curso.setCapacidad(curso.getCapacidad() - 1);
+        cursoClient.actualizarCurso(curso);
+
         return repository.save(m);
     }
 
@@ -44,5 +71,16 @@ public class MatriculaService {
         response.setRegistroCiclo(matricula.getRegistroCiclo());
 
         return response;
+    }
+
+    // Método para verificar si el estudiante ya está matriculado en el curso
+    public boolean existeMatriculaPorEstudianteYCurso(Long estudianteId, Long cursoId) {
+        return repository.existsByEstudianteIdAndCursoId(estudianteId, cursoId);
+    }
+
+    // Método para verificar si el curso ya ha alcanzado su capacidad máxima
+    public boolean capacidadCompleta(Long cursoId) {
+        Curso curso = cursoClient.getCursoById(cursoId);
+        return curso.getInscritos() >= curso.getCapacidad();
     }
 }
