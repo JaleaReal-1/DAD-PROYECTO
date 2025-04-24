@@ -17,9 +17,9 @@ public class EstudianteSeeder {
     @PostConstruct
     public void run() {
         if (repository.count() == 0) {
-            Estudiante e1 = new Estudiante(null, "Carlos Pérez", "Ingeniería de Sistemas", "Activo", "5to");
-            Estudiante e2 = new Estudiante(null, "Ana Torres", "Arquitectura", "Inactivo", "3ro");
-            Estudiante e3 = new Estudiante(null, "Luis Gutiérrez", "Medicina", "Activo", "7mo");
+            Estudiante e1 = new Estudiante(null, "Carlos Pérez", "Ingeniería de Sistemas", "Activo", "5to", "12345678");
+            Estudiante e2 = new Estudiante(null, "Ana Torres", "Arquitectura", "Inactivo", "3ro", "23456789");
+            Estudiante e3 = new Estudiante(null, "Luis Gutiérrez", "Medicina", "Activo", "7mo", "34567890");
 
             repository.saveAll(List.of(e1, e2, e3));
             System.out.println(">>> Estudiantes insertados correctamente");

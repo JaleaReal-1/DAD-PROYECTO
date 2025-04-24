@@ -1,6 +1,5 @@
 package com.example.papmatricula.dto;
 
-
 import lombok.Data;
 
 @Data
@@ -10,5 +9,5 @@ public class Estudiante {
     private String carrera;
     private String estado;
     private String cicloActual;
+    private String dni; // 👈 Campo agregado
 }
-

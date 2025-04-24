@@ -34,6 +34,7 @@ public class EstudianteService {
         encontrado.setCarrera(estudiante.getCarrera());
         encontrado.setEstado(estudiante.getEstado());
         encontrado.setCicloActual(estudiante.getCicloActual());
+        encontrado.setDni(estudiante.getDni()); // 👈 Se añade esta línea
 
         return repository.save(encontrado);
     }
