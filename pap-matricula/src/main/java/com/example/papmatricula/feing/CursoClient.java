@@ -9,14 +9,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "pap-cursos", path = "/cursos", fallbackFactory = CursoClientFallbackFactory.class)
+@FeignClient(
+        name = "pap-cursos",
+        url = "http://localhost:8081", // Cambia el puerto si tu ms-cursos usa otro
+        fallbackFactory = CursoClientFallbackFactory.class
+)
 public interface CursoClient {
-    @GetMapping("/{id}")
+
+    @GetMapping("/cursos/{id}")
     Curso getCursoById(@PathVariable Long id);
 
-    @PutMapping
+    @PutMapping("/cursos")
     void actualizarCurso(@RequestBody Curso curso);
 }
-
 
 
