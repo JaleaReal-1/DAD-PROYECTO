@@ -29,48 +29,14 @@ eureka:
       defaultZone: http://localhost:8090/eureka
 
 # Configuración para Resilience4J Circuit Breaker
-resilience4j:
-  circuitbreaker:
-    instances:
-      estudianteCB:
-        registerHealthIndicator: true
-        slidingWindowSize: 10
-        permittedNumberOfCallsInHalfOpenState: 3
-        slidingWindowType: TIME_BASED
-        minimumNumberOfCalls: 4
-        waitDurationInOpenState: 5s
-        failureRateThreshold: 50
-
-      cursoCB:
-        registerHealthIndicator: true
-        slidingWindowSize: 10
-        permittedNumberOfCallsInHalfOpenState: 3
-        slidingWindowType: TIME_BASED
-        minimumNumberOfCalls: 4
-        waitDurationInOpenState: 5s
-        failureRateThreshold: 50
-
-      pap-cursos:  # Circuit Breaker para el servicio de cursos
-        registerHealthIndicator: true
-        slidingWindowSize: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 5s
-        permittedNumberOfCallsInHalfOpenState: 2
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-
-      pap-estudiantes:  # Circuit Breaker para el servicio de estudiantes
-        registerHealthIndicator: true
-        slidingWindowSize: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 5s
-        permittedNumberOfCallsInHalfOpenState: 2
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-
-      cursoClient:
-        registerHealthIndicator: true
-        slidingWindowSize: 10
-        permittedNumberOfCallsInHalfOpenState: 3
-        slidingWindowType: TIME_BASED
-        minimumNumberOfCalls: 4
-        waitDurationInOpenState: 5s
-        failureRateThreshold: 50
+resilience4j.circuitbreaker:
+  instances:
+    papCursosCB:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 4
+      waitDurationInOpenState: 5s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
