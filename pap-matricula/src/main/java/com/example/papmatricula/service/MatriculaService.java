@@ -7,7 +7,6 @@ import com.example.papmatricula.dto.Estudiante;
 import com.example.papmatricula.dto.MatriculaResponse;
 import com.example.papmatricula.entity.Matricula;
 import com.example.papmatricula.repository.MatriculaRepository;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,12 +26,12 @@ public class MatriculaService {
     }
 
     public Matricula guardar(Matricula m) {
-        Estudiante estudiante = obtenerEstudiantePorId(m.getEstudianteId());
+        Estudiante estudiante = estudianteClient.getEstudianteById(m.getEstudianteId());
         if (!"Activo".equalsIgnoreCase(estudiante.getEstado())) {
             throw new RuntimeException("El estudiante no está activo");
         }
 
-        Curso curso = obtenerCursoPorId(m.getCursoId());
+        Curso curso = cursoClient.getCursoById(m.getCursoId());
         if (curso.getInscritos() >= curso.getCapacidad()) {
             throw new RuntimeException("El curso ya alcanzó su capacidad máxima");
         }
@@ -47,7 +46,7 @@ public class MatriculaService {
         }
 
         curso.setCapacidad(curso.getCapacidad() - 1);
-        cursoClient.actualizarCurso(curso);
+        cursoClient.actualizarCurso(curso); // si falla, el fallback se encargará
 
         return repository.save(m);
     }
@@ -56,8 +55,8 @@ public class MatriculaService {
         Matricula matricula = repository.findById(id).orElse(null);
         if (matricula == null) return null;
 
-        Estudiante estudiante = obtenerEstudiantePorId(matricula.getEstudianteId());
-        Curso curso = obtenerCursoPorId(matricula.getCursoId());
+        Estudiante estudiante = estudianteClient.getEstudianteById(matricula.getEstudianteId());
+        Curso curso = cursoClient.getCursoById(matricula.getCursoId());
 
         MatriculaResponse response = new MatriculaResponse();
         response.setId(matricula.getId());
@@ -69,42 +68,12 @@ public class MatriculaService {
         return response;
     }
 
-    // Circuit Breaker para obtener estudiante
-    @CircuitBreaker(name = "estudianteCB", fallbackMethod = "fallbackEstudiante")
-    public Estudiante obtenerEstudiantePorId(Long id) {
-        return estudianteClient.getEstudianteById(id);
-    }
-
-    // Circuit Breaker para obtener curso
-    @CircuitBreaker(name = "cursoCB", fallbackMethod = "fallbackCurso")
-    public Curso obtenerCursoPorId(Long id) {
-        return cursoClient.getCursoById(id);
-    }
-
-    // FallBack correcto: misma firma + excepción
-    public Estudiante fallbackEstudiante(Long id, Throwable t) {
-        Estudiante est = new Estudiante();
-        est.setId(id);
-        est.setNombre("ERROR: Estudiante no disponible");
-        est.setEstado("Inactivo");
-        return est;
-    }
-
-    public Curso fallbackCurso(Long id, Throwable t) {
-        Curso curso = new Curso();
-        curso.setId(id);
-        curso.setCurso("ERROR: Curso no disponible");
-        curso.setCapacidad(0);
-        curso.setInscritos(0);
-        return curso;
-    }
-
     public boolean existeMatriculaPorEstudianteYCurso(Long estudianteId, Long cursoId) {
         return repository.existsByEstudianteIdAndCursoId(estudianteId, cursoId);
     }
 
     public boolean capacidadCompleta(Long cursoId) {
-        Curso curso = obtenerCursoPorId(cursoId);
+        Curso curso = cursoClient.getCursoById(cursoId);
         return curso.getInscritos() >= curso.getCapacidad();
     }
 }

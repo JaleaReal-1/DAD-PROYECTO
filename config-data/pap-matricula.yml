@@ -1,11 +1,3 @@
-#spring.datasource.url=jdbc:mysql://localhost:3306/contabilidad_db
-#spring.datasource.username=root
-#spring.datasource.password=
-#spring.jpa.hibernate.ddl-auto=update
-#spring.jpa.show-sql=true
-#spring.application.name=ms-transacciones
-#server.port=8083
-
 server:
   port: 8083
 spring:
@@ -30,12 +22,13 @@ springdoc:
   swagger-ui:
     path: /doc/swagger-ui.html
 
-
+# Configuración para Eureka
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8090/eureka
 
+# Configuración para Resilience4J Circuit Breaker
 resilience4j.circuitbreaker:
   instances:
     estudianteCB:
@@ -56,3 +49,18 @@ resilience4j.circuitbreaker:
       waitDurationInOpenState: 5s
       failureRateThreshold: 50
 
+    pap-cursos:  # Circuit Breaker para el servicio de cursos
+      registerHealthIndicator: true
+      slidingWindowSize: 5
+      failureRateThreshold: 50
+      waitDurationInOpenState: 5s
+      permittedNumberOfCallsInHalfOpenState: 2
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+
+    pap-estudiantes:  # Circuit Breaker para el servicio de estudiantes
+      registerHealthIndicator: true
+      slidingWindowSize: 5
+      failureRateThreshold: 50
+      waitDurationInOpenState: 5s
+      permittedNumberOfCallsInHalfOpenState: 2
+      automaticTransitionFromOpenToHalfOpenEnabled: true

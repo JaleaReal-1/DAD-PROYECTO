@@ -9,13 +9,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "pap-cursos")
+@FeignClient(name = "pap-cursos", path = "/cursos", fallbackFactory = CursoClientFallbackFactory.class)
 public interface CursoClient {
-
-    @GetMapping("/cursos/{id}")
+    @GetMapping("/{id}")
     Curso getCursoById(@PathVariable Long id);
 
-    @PutMapping("/cursos")
-    ResponseEntity<Curso> actualizarCurso(@RequestBody Curso curso);  // Ya está bien para actualizar el curso
+    @PutMapping
+    void actualizarCurso(@RequestBody Curso curso);
 }
+
+
 
