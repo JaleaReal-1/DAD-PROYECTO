@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,12 +23,13 @@ public class MatriculaService {
     private final EstudianteClient estudianteClient;
     private final CursoClient cursoClient;
 
-    public List<Matricula> listar() {
-        return repository.findAll();
+    public List<MatriculaResponse> listar() {
+        return repository.findAll().stream()
+                .map(this::mapearMatriculaAResponse)
+                .collect(Collectors.toList());
     }
 
     public Matricula guardar(Matricula m) {
-        // Obtener estudiante con fallback manual
         Estudiante estudiante;
         try {
             estudiante = estudianteClient.getEstudianteById(m.getEstudianteId());
@@ -43,7 +45,6 @@ public class MatriculaService {
             throw new RuntimeException("El estudiante no está activo");
         }
 
-        // Obtener curso con circuit breaker + fallback automático
         Curso curso = obtenerCursoConCircuitBreaker(m.getCursoId());
         System.out.println(">>> CURSO OBTENIDO: " + curso.getCurso());
 
@@ -55,7 +56,6 @@ public class MatriculaService {
             throw new RuntimeException("El curso ya alcanzó su capacidad máxima");
         }
 
-        // Validar si ya está matriculado
         boolean yaMatriculado = repository.existsByEstudianteIdAndCursoId(m.getEstudianteId(), m.getCursoId());
         if (yaMatriculado) {
             throw new RuntimeException("El estudiante ya está matriculado en este curso");
@@ -65,7 +65,6 @@ public class MatriculaService {
             m.setFecha(LocalDate.now());
         }
 
-        // Simular actualización del curso
         try {
             curso.setCapacidad(curso.getCapacidad() - 1);
             cursoClient.actualizarCurso(curso);
@@ -79,7 +78,21 @@ public class MatriculaService {
     public MatriculaResponse buscarPorId(Long id) {
         Matricula matricula = repository.findById(id).orElse(null);
         if (matricula == null) return null;
+        return mapearMatriculaAResponse(matricula);
+    }
 
+    public boolean existeMatriculaPorEstudianteYCurso(Long estudianteId, Long cursoId) {
+        return repository.existsByEstudianteIdAndCursoId(estudianteId, cursoId);
+    }
+
+    public boolean capacidadCompleta(Long cursoId) {
+        Curso curso = obtenerCursoConCircuitBreaker(cursoId);
+        return curso.getInscritos() >= curso.getCapacidad();
+    }
+
+    // --- MÉTODOS DE MAPEADO Y FALLBACK ---
+
+    public MatriculaResponse mapearMatriculaAResponse(Matricula matricula) {
         Estudiante estudiante;
         try {
             estudiante = estudianteClient.getEstudianteById(matricula.getEstudianteId());
@@ -99,21 +112,6 @@ public class MatriculaService {
         return response;
     }
 
-    public boolean existeMatriculaPorEstudianteYCurso(Long estudianteId, Long cursoId) {
-        return repository.existsByEstudianteIdAndCursoId(estudianteId, cursoId);
-    }
-
-    public boolean capacidadCompleta(Long cursoId) {
-        Curso curso = obtenerCursoConCircuitBreaker(cursoId);
-        if ("ERROR: Curso no disponible".equalsIgnoreCase(curso.getCurso())) {
-            return true;
-        }
-        return curso.getInscritos() >= curso.getCapacidad();
-    }
-
-    // --- MÉTODOS DE FALLBACK ---
-
-    // Fallback manual para estudiante
     public Estudiante fallbackEstudiante(Long id, Throwable t) {
         Estudiante est = new Estudiante();
         est.setId(id);
@@ -122,20 +120,25 @@ public class MatriculaService {
         return est;
     }
 
-    // Circuit breaker + fallback para curso
-    @CircuitBreaker(name = "cursoClient", fallbackMethod = "fallbackCurso")
-    public Curso obtenerCursoConCircuitBreaker(Long cursoId) {
-        return cursoClient.getCursoById(cursoId);
+    @CircuitBreaker(name = "cursoService", fallbackMethod = "fallbackObtenerCurso")
+    public Curso obtenerCursoConCircuitBreaker(Long id) {
+        return cursoClient.getCursoById(id);
+    }
+    public Curso obtenerCursoConFallback(Long id) {
+        // Llamada al microservicio de cursos utilizando Feign
+        return cursoClient.obtenerCursoById(id);
     }
 
-    // Fallback automático invocado por Resilience4j
-    public Curso fallbackCurso(Long id, Throwable t) {
-        System.out.println(">>> Fallback activado para curso ID " + id + ": " + t.getMessage());
-        Curso curso = new Curso();
-        curso.setId(id);
-        curso.setCurso("ERROR: Curso no disponible");
-        curso.setCapacidad(0);
-        curso.setInscritos(0);
-        return curso;
+
+    public Curso fallbackObtenerCurso(Long id, Throwable throwable) {
+        Curso cursoFallback = new Curso();
+        cursoFallback.setId(id);
+        cursoFallback.setCurso("Curso no disponible");
+        cursoFallback.setHorario("No disponible");
+        cursoFallback.setCapacidad(0);
+        cursoFallback.setCodigo("ERROR");
+        cursoFallback.setCiclo("No disponible");
+        cursoFallback.setInscritos(0);
+        return cursoFallback;
     }
 }
