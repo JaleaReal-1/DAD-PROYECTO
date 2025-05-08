@@ -7,7 +7,6 @@ import com.example.papmatricula.dto.Estudiante;
 import com.example.papmatricula.dto.MatriculaResponse;
 import com.example.papmatricula.entity.Matricula;
 import com.example.papmatricula.repository.MatriculaRepository;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,27 +29,14 @@ public class MatriculaService {
     }
 
     public Matricula guardar(Matricula m) {
-        Estudiante estudiante;
-        try {
-            estudiante = estudianteClient.getEstudianteById(m.getEstudianteId());
-        } catch (Exception e) {
-            estudiante = fallbackEstudiante(m.getEstudianteId(), e);
-        }
-
-        if ("ERROR: Estudiante no disponible".equalsIgnoreCase(estudiante.getNombre())) {
-            throw new RuntimeException("No se pudo obtener información del estudiante (servicio no disponible)");
-        }
+        Estudiante estudiante = estudianteClient.getEstudianteById(m.getEstudianteId());
 
         if (!"Activo".equalsIgnoreCase(estudiante.getEstado())) {
             throw new RuntimeException("El estudiante no está activo");
         }
 
-        Curso curso = obtenerCursoConCircuitBreaker(m.getCursoId());
+        Curso curso = cursoClient.getCursoById(m.getCursoId());
         System.out.println(">>> CURSO OBTENIDO: " + curso.getCurso());
-
-        if ("ERROR: Curso no disponible".equalsIgnoreCase(curso.getCurso())) {
-            throw new RuntimeException("No se pudo obtener información del curso (servicio no disponible)");
-        }
 
         if (curso.getInscritos() >= curso.getCapacidad()) {
             throw new RuntimeException("El curso ya alcanzó su capacidad máxima");
@@ -86,21 +72,14 @@ public class MatriculaService {
     }
 
     public boolean capacidadCompleta(Long cursoId) {
-        Curso curso = obtenerCursoConCircuitBreaker(cursoId);
+        Curso curso = cursoClient.getCursoById(cursoId);
         return curso.getInscritos() >= curso.getCapacidad();
     }
 
-    // --- MÉTODOS DE MAPEADO Y FALLBACK ---
-
+    // --- MÉTODO DE MAPEADO ---
     public MatriculaResponse mapearMatriculaAResponse(Matricula matricula) {
-        Estudiante estudiante;
-        try {
-            estudiante = estudianteClient.getEstudianteById(matricula.getEstudianteId());
-        } catch (Exception e) {
-            estudiante = fallbackEstudiante(matricula.getEstudianteId(), e);
-        }
-
-        Curso curso = obtenerCursoConCircuitBreaker(matricula.getCursoId());
+        Estudiante estudiante = estudianteClient.getEstudianteById(matricula.getEstudianteId());
+        Curso curso = cursoClient.getCursoById(matricula.getCursoId());
 
         MatriculaResponse response = new MatriculaResponse();
         response.setId(matricula.getId());
@@ -110,35 +89,5 @@ public class MatriculaService {
         response.setRegistroCiclo(matricula.getRegistroCiclo());
 
         return response;
-    }
-
-    public Estudiante fallbackEstudiante(Long id, Throwable t) {
-        Estudiante est = new Estudiante();
-        est.setId(id);
-        est.setNombre("ERROR: Estudiante no disponible");
-        est.setEstado("Inactivo");
-        return est;
-    }
-
-    @CircuitBreaker(name = "cursoService", fallbackMethod = "fallbackObtenerCurso")
-    public Curso obtenerCursoConCircuitBreaker(Long id) {
-        return cursoClient.getCursoById(id);
-    }
-    public Curso obtenerCursoConFallback(Long id) {
-        // Llamada al microservicio de cursos utilizando Feign
-        return cursoClient.obtenerCursoById(id);
-    }
-
-
-    public Curso fallbackObtenerCurso(Long id, Throwable throwable) {
-        Curso cursoFallback = new Curso();
-        cursoFallback.setId(id);
-        cursoFallback.setCurso("Curso no disponible");
-        cursoFallback.setHorario("No disponible");
-        cursoFallback.setCapacidad(0);
-        cursoFallback.setCodigo("ERROR");
-        cursoFallback.setCiclo("No disponible");
-        cursoFallback.setInscritos(0);
-        return cursoFallback;
     }
 }
