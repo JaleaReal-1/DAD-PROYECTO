@@ -5,9 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 @FeignClient(
-        name = "pap-cursos",
-        url = "http://localhost:8081"
-)
+        name = "pap-cursos")
 public interface CursoClient {
 
     @GetMapping("/cursos/{id}")
