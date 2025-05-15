@@ -26,6 +26,24 @@ spring:
           predicates:
             - Path=/matriculas/**
 
+
+        - id: ms-auth-service
+          uri: lb://ms-auth
+          predicates:
+            - Path=/auth/**
+        - id: ms-auth-service
+          uri: lb://ms-auth
+          predicates:
+            - Path=/login/**
+        - id: ms-auth-service
+          uri: lb://ms-auth
+          predicates:
+            - Path=/validate/**
+        - id: ms-auth-service
+          uri: lb://ms-auth
+          predicates:
+            - Path=/create/**
+
 eureka:
   client:
     service-url:
