@@ -17,6 +17,8 @@ spring:
           uri: lb://pap-cursos
           predicates:
             - Path=/cursos/**
+          filters:
+            - AuthFilter
         - id: pap-estudiantes
           uri: lb://pap-estudiantes
           predicates:
@@ -25,6 +27,8 @@ spring:
           uri: lb://pap-matricula
           predicates:
             - Path=/matriculas/**
+
+
 
 
         - id: ms-auth-service
