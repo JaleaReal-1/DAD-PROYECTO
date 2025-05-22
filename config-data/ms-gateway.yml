@@ -23,6 +23,8 @@ spring:
           uri: lb://pap-estudiantes
           predicates:
             - Path=/estudiantes/**
+          filters:
+            - AuthFilter
         - id: pap-matricula
           uri: lb://pap-matricula
           predicates:
